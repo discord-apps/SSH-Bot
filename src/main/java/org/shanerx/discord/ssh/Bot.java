@@ -21,16 +21,15 @@ public class Bot {
 		Bot bot = new Bot();
 		bot.createConfig(config);
 		
-		JSONObject json = null;
 		try {
-			json = (JSONObject) new JSONParser().parse(new FileReader(config));
+			bot.json = (JSONObject) new JSONParser().parse(new FileReader(config));
 		} catch (Exception e) {
 			Logger.getLogger("BOT").log(java.util.logging.Level.SEVERE, "Could not parse config file.", e.getCause());
 			System.exit(-2);
 		}
 		
-		String login = (String) json.get("login_token");
-		Game game = Game.of((String) json.get("game"));
+		String login = (String) bot.json.get("login_token");
+		Game game = Game.of((String) bot.json.get("game"));
 		
 		try {
 			bot.jda = new JDABuilder(AccountType.BOT)
@@ -44,11 +43,16 @@ public class Bot {
 	}
 	
 	private JDA jda;
+	private JSONObject json;
 	
 	protected Bot() {}
 	
 	public JDA getJDA() {
 		return jda;
+	}
+	
+	public JSONObject getJson() {
+		return json;
 	}
 	
 	protected void createConfig(File config) {
