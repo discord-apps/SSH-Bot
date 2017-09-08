@@ -1,0 +1,73 @@
+package org.shanerx.discord.ssh;
+
+import net.dv8tion.jda.core.AccountType;
+import net.dv8tion.jda.core.JDA;
+import net.dv8tion.jda.core.JDABuilder;
+import net.dv8tion.jda.core.entities.Game;
+import net.dv8tion.jda.core.exceptions.RateLimitedException;
+import net.dv8tion.jda.core.utils.SimpleLog;
+import org.json.simple.JSONObject;
+import org.json.simple.parser.JSONParser;
+import org.json.simple.parser.ParseException;
+import sun.util.logging.PlatformLogger;
+
+import javax.security.auth.login.LoginException;
+import java.io.File;
+import java.io.FileReader;
+import java.io.IOException;
+import java.io.PrintWriter;
+import java.util.logging.Logger;
+
+public class Bot {
+	
+	public static void main(String[] args) {
+		
+		File config = new File("conf.json");
+		Bot bot = new Bot();
+		bot.createConfig(config);
+		
+		JSONObject json = null;
+		try {
+			json = (JSONObject) new JSONParser().parse(new FileReader(config));
+		} catch (Exception e) {
+			Logger.getLogger("BOT").log(java.util.logging.Level.SEVERE, "Could not parse config file.", e.getCause());
+			System.exit(-2);
+		}
+		
+		String login = (String) json.get("login_token");
+		Game game = Game.of((String) json.get("game"));
+		
+		try {
+			JDA jda = new JDABuilder(AccountType.BOT).setToken(login).buildBlocking();
+		} catch (Exception e) {
+			Logger.getLogger("BOT").log(java.util.logging.Level.SEVERE, "Could not build JDA object.", e.getCause());
+			System.exit(-3);
+		}
+	}
+	
+	protected void createConfig(File config) {
+		if (!config.exists()) {
+			try {
+				config.createNewFile();
+				PrintWriter pw = new PrintWriter(config);
+				pw.println("{");
+				pw.println("    \"login_token\": \"<insert token>\",");
+				pw.println("    \"game\": \"PuTTY\",");
+				pw.println("    \"ssh\": [");
+				pw.println("        {\"guild\":\"<insert id>\",");
+				pw.println("        \"channel\":\"<insert id>\",");
+				pw.println("        \"hostname\":\"<insert ip>\",");
+				pw.println("        \"username\":\"<insert user>\",");
+				pw.println("        \"password\":\"<insert pass>\"");
+				pw.println("        }");
+				pw.println("    ]");
+				pw.println("}");
+				pw.flush();
+				pw.close();
+			} catch (IOException e) {
+				Logger.getLogger("BOT").log(java.util.logging.Level.SEVERE, "Could not create fresh config file.", e.getCause());
+				System.exit(-1);
+			}
+		}
+	}
+}
