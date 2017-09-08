@@ -3,7 +3,11 @@ package org.shanerx.discord.ssh;
 import net.dv8tion.jda.core.AccountType;
 import net.dv8tion.jda.core.JDA;
 import net.dv8tion.jda.core.JDABuilder;
+import net.dv8tion.jda.core.Permission;
 import net.dv8tion.jda.core.entities.Game;
+import net.dv8tion.jda.core.entities.Guild;
+import net.dv8tion.jda.core.entities.TextChannel;
+import org.json.JSONArray;
 import org.json.simple.JSONObject;
 import org.json.simple.parser.JSONParser;
 
@@ -11,6 +15,7 @@ import java.io.File;
 import java.io.FileReader;
 import java.io.IOException;
 import java.io.PrintWriter;
+import java.util.Map;
 import java.util.logging.Logger;
 
 public class Bot {
@@ -40,10 +45,20 @@ public class Bot {
 			Logger.getLogger("BOT").log(java.util.logging.Level.SEVERE, "Could not build JDA object.", e.getCause());
 			System.exit(-3);
 		}
+		
+		((JSONArray) bot.json.get("ssh")).forEach(o -> {
+			JSONObject obj = (JSONObject) o;
+			Guild guild = bot.jda.getGuildById(Long.parseLong((String) obj.get("guild")));
+			TextChannel text = guild != null ? guild.getTextChannelById(Long.parseLong((String) obj.get("guild"))) : null;
+			if (text != null && guild.getSelfMember().hasPermission(text, Permission.MESSAGE_READ, Permission.MESSAGE_WRITE)) {
+				bot.channelMap.put(guild, text);
+			}
+		});
 	}
 	
 	private JDA jda;
 	private JSONObject json;
+	private Map<Guild, TextChannel> channelMap;
 	
 	protected Bot() {}
 	
@@ -53,6 +68,10 @@ public class Bot {
 	
 	public JSONObject getJson() {
 		return json;
+	}
+	
+	public Map<Guild, TextChannel> getChannelMap() {
+		return channelMap;
 	}
 	
 	protected void createConfig(File config) {
