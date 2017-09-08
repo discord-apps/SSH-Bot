@@ -51,14 +51,14 @@ public class Bot {
 			Guild guild = bot.jda.getGuildById(Long.parseLong((String) obj.get("guild")));
 			TextChannel text = guild != null ? guild.getTextChannelById(Long.parseLong((String) obj.get("guild"))) : null;
 			if (text != null && guild.getSelfMember().hasPermission(text, Permission.MESSAGE_READ, Permission.MESSAGE_WRITE)) {
-				bot.channelMap.put(guild, text);
+				bot.channelMap.put(text, new SSHInfo((String) obj.get("hostname"), (String) obj.get("username"), (String) obj.get("password")));
 			}
 		});
 	}
 	
 	private JDA jda;
 	private JSONObject json;
-	private Map<Guild, TextChannel> channelMap;
+	private Map<TextChannel, SSHInfo> channelMap;
 	
 	protected Bot() {}
 	
@@ -70,7 +70,7 @@ public class Bot {
 		return json;
 	}
 	
-	public Map<Guild, TextChannel> getChannelMap() {
+	public Map<TextChannel, SSHInfo> getChannelMap() {
 		return channelMap;
 	}
 	
