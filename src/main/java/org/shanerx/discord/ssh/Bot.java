@@ -59,7 +59,7 @@ public class Bot {
 	
 	private JDA jda;
 	private JSONObject json;
-	private Map<TextChannel, SSHInfo> channelMap;
+	private Map<TextChannel, SSHInfo> channelMap; // TODO make it Map<TextChannel, SSHClient>
 	
 	protected Bot() {}
 	
