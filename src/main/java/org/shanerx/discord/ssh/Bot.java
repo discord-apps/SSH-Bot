@@ -33,11 +33,22 @@ public class Bot {
 		Game game = Game.of((String) json.get("game"));
 		
 		try {
-			JDA jda = new JDABuilder(AccountType.BOT).setToken(login).buildBlocking();
+			bot.jda = new JDABuilder(AccountType.BOT)
+					.setToken(login)
+					.setGame(game)
+					.buildBlocking();
 		} catch (Exception e) {
 			Logger.getLogger("BOT").log(java.util.logging.Level.SEVERE, "Could not build JDA object.", e.getCause());
 			System.exit(-3);
 		}
+	}
+	
+	private JDA jda;
+	
+	protected Bot() {}
+	
+	public JDA getJDA() {
+		return jda;
 	}
 	
 	protected void createConfig(File config) {
