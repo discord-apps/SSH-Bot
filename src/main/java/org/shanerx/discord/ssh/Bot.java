@@ -40,6 +40,7 @@ public class Bot {
 			bot.jda = new JDABuilder(AccountType.BOT)
 					.setToken(login)
 					.setGame(game)
+					.addEventListener(new ChannelMessageListener(bot))
 					.buildBlocking();
 		} catch (Exception e) {
 			Logger.getLogger("BOT").log(java.util.logging.Level.SEVERE, "Could not build JDA object.", e.getCause());
